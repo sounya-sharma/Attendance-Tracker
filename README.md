@@ -5,4 +5,3 @@ This project is an attendance system which provides attendance on scanning QR co
 * Attend.py file is for scanning the QR code and store the scanned values in Excel file.<br>
 * On start of Attend.py, a GUI is displayed in which all fields are mandatory.<br>
 * To exit the scanner press 'g' in your keyboard.<br>
-
