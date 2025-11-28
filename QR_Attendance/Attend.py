@@ -1,6 +1,5 @@
 from tkinter.constants import GROOVE, RAISED, RIDGE
 import cv2
-import pyzbar.pyzbar as pyzbar
 import time
 from datetime import date, datetime
 import tkinter as tk 
@@ -28,7 +27,7 @@ combo_search.place(x=250,y=150)
 
 ttk.Label(window, text = "Branch",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=200)
 combo_search=ttk.Combobox(window,textvariable=branch,width=10,font=("times new roman",13),state='readonly')
-combo_search['values']=("BCA","BBA","BCOM","BA","BSC","MCA","MBA"")
+combo_search['values']=("BCA","BBA","BCOM","BA","BSC","MCA","MBA")
 combo_search.place(x=250,y=200)
 
 ttk.Label(window, text = "Section",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=250)
@@ -57,9 +56,14 @@ Manag_Frame.place(x=480,y=80,width=450,height=530)
 
 canvas = Canvas(Manag_Frame, width = 300, height = 300,background="lavender")      
 canvas.pack()      
-img = PhotoImage(file="QR_Attendance\\Bg.png")      
-canvas.create_image(50,50, anchor=NW, image=img) 
+# img = PhotoImage(file="Bg.png")      
+# canvas.create_image(50,50, anchor=NW, image=img) 
 
+def on_closing():
+    window.destroy()
+    exit()
+
+window.protocol("WM_DELETE_WINDOW", on_closing)
 window.mainloop()
 
 cap = cv2.VideoCapture(0)
@@ -95,13 +99,17 @@ def checkData(data):
         print('\n'+str(len(names)+1)+'\n'+'present...')
         enterData(data)
 
+def decode_qr(frame):
+    detector = cv2.QRCodeDetector()
+    val, points, straight_qr = detector.detectAndDecode(frame)
+    return val
+
 while True:
     _, frame = cap.read()         
-    decodedObjects = pyzbar.decode(frame)
-    for obj in decodedObjects:
-        checkData(obj.data)
-        time.sleep(1)
-       
+    qr_data = decode_qr(frame)
+    checkData(qr_data)
+    time.sleep(1)
+        
     cv2.imshow("Frame", frame)
 
     if cv2.waitKey(1)&0xFF == ord('g'):
