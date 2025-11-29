@@ -5,13 +5,13 @@ from datetime import date, datetime
 import tkinter as tk 
 from tkinter import Frame, ttk, messagebox
 from tkinter import *
+import os
 
 window = tk.Tk()
 window.title('Attendance System V-089')
 window.geometry('900x600')                           
 year= tk.StringVar()      
 branch= tk.StringVar()
-sec= tk.StringVar() 
 period= tk.StringVar()
 
 title = tk.Label(window,text="Attendance System V-089",bd=10,relief=tk.GROOVE,font=("times new roman",40),bg="lavender",fg="black")
@@ -27,27 +27,22 @@ combo_search.place(x=250,y=150)
 
 ttk.Label(window, text = "Branch",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=200)
 combo_search=ttk.Combobox(window,textvariable=branch,width=10,font=("times new roman",13),state='readonly')
-combo_search['values']=("BCA","BBA","BCOM","BA","BSC","MCA","MBA")
+combo_search['values']=("BCA","BBA","BCOM","BA","BSC","MCA","MBA","BAM")
 combo_search.place(x=250,y=200)
 
-ttk.Label(window, text = "Section",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=250)
-combo_search=ttk.Combobox(window,textvariable=sec,width=10,font=("times new roman",13),state='readonly')
-combo_search['values']=('A','B','C','D')
+ttk.Label(window, text = "Period",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=250)
+combo_search=ttk.Combobox(window,textvariable=period,width=10,font=("times new roman",13),state='readonly')
+combo_search['values']=('1','2','3','4','5','6','7','8','9','10')
 combo_search.place(x=250,y=250)
 
-ttk.Label(window, text = "Period",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=300)
-combo_search=ttk.Combobox(window,textvariable=period,width=10,font=("times new roman",13),state='readonly')
-combo_search['values']=('1','2','3','4','5','6','7')
-combo_search.place(x=250,y=300)
-
 def checkk():
-    if(year.get() and branch.get() and period.get() and sec.get()):
+    if(year.get() and branch.get() and period.get()):
         window.destroy()
     else:
         messagebox.showwarning("Warning", "All fields required!!")
 
 exit_button = tk.Button(window,width=13, text="Submit",font=("Times New Roman", 15),command=checkk,bd=2,relief=RIDGE)
-exit_button.place(x=300,y=380)
+exit_button.place(x=300,y=330)
 
 
 
@@ -56,7 +51,9 @@ Manag_Frame.place(x=480,y=80,width=450,height=530)
 
 canvas = Canvas(Manag_Frame, width = 300, height = 300,background="lavender")      
 canvas.pack()      
-# img = PhotoImage(file="Bg.png")      
+# script_dir = os.path.dirname(os.path.abspath(__file__))
+# img_path = os.path.join(script_dir, "bg.png")
+# img = PhotoImage(file=img_path)      
 # canvas.create_image(50,50, anchor=NW, image=img) 
 
 def on_closing():
@@ -71,7 +68,7 @@ names=[]
 today=date.today()
 d= today.strftime("%b-%d-%Y")
 
-fob=open(f"{branch.get()}-{sec.get()}{year.get()}_{d}_Period{period.get()}.xlsx",'w+')
+fob=open(f"{branch.get()}-{year.get()}_{d}_Period{period.get()}.xlsx",'w+')
 fob.write("Reg No."+'\t')
 fob.write("Class & Sec"+'\t')
 fob.write("Year"+'\t')
@@ -86,8 +83,8 @@ def enterData(z):
         names.append(z)
         z=''.join(str(z))
         intime = it.strftime("%H:%M:%S")
-        fob.write(z+'\t'+branch.get()+'-'+sec.get()+'\t'+year.get()+'\t'+period.get()+'\t'+intime+'\n')
-    return names 
+        fob.write(z+'\t'+branch.get()+'\t'+year.get()+'\t'+period.get()+'\t'+intime+'\n')
+    return names
     
 print('Reading...')
 
