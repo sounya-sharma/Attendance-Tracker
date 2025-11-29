@@ -1,13 +1,14 @@
 from MyQR import myqr
 import os
-
-f = open('students.txt','r')
+import time
+f = open('QR_Attendance\\students.txt','r')
 lines = f.read().split("\n")
 print(lines)
 
-# Create bca folder if it doesn't exist
-if not os.path.exists('bca'):
-    os.makedirs('bca')
+# Create a folder if it doesn't exist
+qr_dir = 'QR_Attendance\\qr-codes'
+if not os.path.exists(qr_dir):
+    os.makedirs(qr_dir)
 
 for _ in range (0,len(lines)):
     data = lines[_]
@@ -21,5 +22,5 @@ for _ in range (0,len(lines)):
             contrast=1.0,
             brightness=1.0,
             save_name = qr_name,
-            save_dir='bca'
+            save_dir=qr_dir
         )
