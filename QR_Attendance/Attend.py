@@ -8,13 +8,13 @@ from tkinter import *
 import os
 
 window = tk.Tk()
-window.title('Attendance System V-089')
-window.geometry('900x600')                           
+window.title('BIT QR-Attendance System')
+window.geometry('500x500')                           
 year= tk.StringVar()      
 branch= tk.StringVar()
 period= tk.StringVar()
 
-title = tk.Label(window,text="Attendance System V-089",bd=10,relief=tk.GROOVE,font=("times new roman",40),bg="lavender",fg="black")
+title = tk.Label(window,text="Attendance System V-089",bd=10,relief=tk.GROOVE,font=("times new roman",20),bg="lavender",fg="black")
 title.pack(side=tk.TOP,fill=tk.X)
 
 Manage_Frame=Frame(window,bg="lavender")
@@ -22,7 +22,7 @@ Manage_Frame.place(x=0,y=80,width=480,height=530)
 
 ttk.Label(window, text = "Year",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=150)
 combo_search=ttk.Combobox(window,textvariable=year,width=10,font=("times new roman",13),state='readonly')
-combo_search['values']=('1','2','3','4','5','6') 
+combo_search['values']=('1','2','3','4','5') 
 combo_search.place(x=250,y=150)
 
 ttk.Label(window, text = "Branch",background="lavender", foreground ="black",font = ("Times New Roman", 15)).place(x=100,y=200)
@@ -68,12 +68,10 @@ names=[]
 today=date.today()
 d= today.strftime("%b-%d-%Y")
 
-fob=open(f"{branch.get()}-{year.get()}_{d}_Period{period.get()}.xlsx",'w+')
-fob.write("Reg No."+'\t')
-fob.write("Class & Sec"+'\t')
-fob.write("Year"+'\t')
-fob.write("Period"+'\t')
-fob.write("In Time"+'\n')
+filename = f"{branch.get()}-{year.get()}_{d}_Period{period.get()}.csv"
+print(f"Attendance file: {os.path.abspath(filename)}")
+fob=open(filename,'w+')
+fob.write("Reg No.,Branch,Year,Period,In Time\n")
 
 def enterData(z):   
     if z in names:
@@ -83,7 +81,9 @@ def enterData(z):
         names.append(z)
         z=''.join(str(z))
         intime = it.strftime("%H:%M:%S")
-        fob.write(z+'\t'+branch.get()+'\t'+year.get()+'\t'+period.get()+'\t'+intime+'\n')
+
+        fob.write(f"{z},{branch.get()},{year.get()},{period.get()},{intime}\n")
+        fob.flush()  # Ensure data is written immediately
     return names
     
 print('Reading...')
@@ -93,6 +93,7 @@ def checkData(data):
     if data in names:
         print('Already Present')
     else:
+        print(f'QR Data detected: {data}')
         print('\n'+str(len(names)+1)+'\n'+'present...')
         enterData(data)
 
@@ -104,13 +105,19 @@ def decode_qr(frame):
 while True:
     _, frame = cap.read()         
     qr_data = decode_qr(frame)
-    checkData(qr_data)
-    time.sleep(1)
+    if qr_data:  # Only check if QR code was actually detected
+        checkData(qr_data)
+        time.sleep(1)
         
     cv2.imshow("Frame", frame)
 
-    if cv2.waitKey(1)&0xFF == ord('g'):
-        cv2.destroyAllWindows()
+    key = cv2.waitKey(1)&0xFF
+    # Close if 'g' is pressed or window is closed
+    if key == ord('g') or cv2.getWindowProperty("Frame", cv2.WND_PROP_VISIBLE) < 1:
         break
     
+cap.release()
+cv2.destroyAllWindows()
 fob.close()
+print(f"\nAttendance saved to: {os.path.abspath(filename)}")
+print(f"Total students: {len(names)}")
